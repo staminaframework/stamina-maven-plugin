@@ -17,7 +17,7 @@ pipeline {
         stage("Verify") {
             steps {
                 withMaven(maven: 'M3', mavenLocalRepo: '.repository') {
-                    sh "mvn failsafe:integration-test failsafe:verify"
+                    sh "mvn -Dmaven.install.skip=true integration-test"
                 }
             }
         }
