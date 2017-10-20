@@ -107,6 +107,7 @@ public class PackageAddonMojo extends AbstractMojo {
         }
         getLog().info("Reading addon dependencies");
         final StringBuilder addonContentBuf = new StringBuilder();
+        int contentStartOrder = 1;
         for (final Dependency dep : projectDependencies) {
             final String scope = dep.getScope();
             if (Artifact.SCOPE_PROVIDED.equals(scope)
@@ -124,7 +125,7 @@ public class PackageAddonMojo extends AbstractMojo {
             if (addonContentBuf.length() != 0) {
                 addonContentBuf.append(", ");
             }
-            addonContentBuf.append(toSubsystemContentItem(dep));
+            addonContentBuf.append(toSubsystemContentItem(dep, contentStartOrder++));
         }
 
         final File addonDir = new File(outputDirectory, "addon");
@@ -193,7 +194,7 @@ public class PackageAddonMojo extends AbstractMojo {
         }
     }
 
-    private String toSubsystemContentItem(Dependency dep) throws MojoFailureException {
+    private String toSubsystemContentItem(Dependency dep, int startOrder) throws MojoFailureException {
         final File depFile = resolveDependency(dep);
         if ("esa".equals(dep.getType())) {
             try (final ZipFile zip = new ZipFile(depFile)) {
@@ -217,7 +218,7 @@ public class PackageAddonMojo extends AbstractMojo {
                     if (sn == null) {
                         throw new IOException("Missing subsystem symbolic name");
                     }
-                    return sn + ";type=" + type + ";version=" + version;
+                    return sn + ";type=" + type + ";version=" + version + ";start-order:=" + startOrder;
                 }
             } catch (IOException e) {
                 throw new MojoFailureException("Failed to read OSGi subsystem dependency: " + depFile, e);
@@ -249,7 +250,7 @@ public class PackageAddonMojo extends AbstractMojo {
                 final String type = atts.getValue(Constants.FRAGMENT_HOST) != null
                         ? "osgi.fragment" : "osgi.bundle";
 
-                return sn + ";type=" + type + ";version=" + version;
+                return sn + ";type=" + type + ";version=" + version + ";start-order:=" + startOrder;
             } catch (IOException e) {
                 throw new MojoFailureException("Failed to read JAR manifest: " + depFile, e);
             }
