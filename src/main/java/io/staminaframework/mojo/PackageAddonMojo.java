@@ -17,6 +17,8 @@
 package io.staminaframework.mojo;
 
 import aQute.bnd.version.MavenVersion;
+import aQute.bnd.version.Version;
+import aQute.bnd.version.VersionRange;
 import org.apache.felix.utils.manifest.Parser;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
@@ -208,7 +210,8 @@ public class PackageAddonMojo extends AbstractMojo {
                         sn = man.getMainAttributes().getValue(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME);
                         final String rawVersion = man.getMainAttributes().getValue(SubsystemConstants.SUBSYSTEM_VERSION);
                         if (rawVersion != null) {
-                            version = rawVersion;
+                            final String versionStr = rawVersion;
+                            version = toVersionRange(versionStr);
                         }
                         final String rawType = man.getMainAttributes().getValue(SubsystemConstants.SUBSYSTEM_TYPE);
                         if (rawType != null) {
@@ -218,7 +221,7 @@ public class PackageAddonMojo extends AbstractMojo {
                     if (sn == null) {
                         throw new IOException("Missing subsystem symbolic name");
                     }
-                    return sn + ";type=" + type + ";version=" + version + ";start-order:=" + startOrder;
+                    return sn + ";type=" + type + ";version=\"" + version + "\";start-order:=" + startOrder;
                 }
             } catch (IOException e) {
                 throw new MojoFailureException("Failed to read OSGi subsystem dependency: " + depFile, e);
@@ -244,13 +247,14 @@ public class PackageAddonMojo extends AbstractMojo {
                 String version = "0.0.0";
                 final String rawVersion = atts.getValue(Constants.BUNDLE_VERSION);
                 if (rawVersion != null) {
-                    version = Parser.parseHeader(rawVersion)[0].getName();
+                    final String versionStr = Parser.parseHeader(rawVersion)[0].getName();
+                    version = toVersionRange(versionStr);
                 }
 
                 final String type = atts.getValue(Constants.FRAGMENT_HOST) != null
                         ? "osgi.fragment" : "osgi.bundle";
 
-                return sn + ";type=" + type + ";version=" + version + ";start-order:=" + startOrder;
+                return sn + ";type=" + type + ";version=\"" + version + "\";start-order:=" + startOrder;
             } catch (IOException e) {
                 throw new MojoFailureException("Failed to read JAR manifest: " + depFile, e);
             }
@@ -277,5 +281,19 @@ public class PackageAddonMojo extends AbstractMojo {
                     + dep.getGroupId() + ":" + dep.getArtifactId()
                     + ":" + dep.getVersion());
         }
+    }
+
+    private String toVersionRange(String versionStr) {
+        final Version v = Version.parseVersion(versionStr == null ? "0.0.0" : versionStr);
+        final Version low = new Version(v.getMajor(), v.getMinor());
+        final boolean isStable = low.getMajor() > 0;
+        final int highMajor;
+        if (isStable) {
+            highMajor = low.getMajor() + 1;
+        } else {
+            highMajor = 1;
+        }
+        final Version high = new Version(highMajor, 0);
+        return new VersionRange(low, high).toString();
     }
 }
