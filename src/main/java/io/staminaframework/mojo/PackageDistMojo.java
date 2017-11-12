@@ -125,11 +125,11 @@ public class PackageDistMojo extends AbstractMojo {
         // Resolve Stamina distribution artifact from plugin dependencies.
         Artifact distArt = null;
         if (!StringUtils.isEmpty(distributionVersion)) {
-            distArt = new DefaultArtifact("io.staminaframework", "io.staminaframework.runtime",
+            distArt = new DefaultArtifact("io.staminaframework.runtime", "io.staminaframework.runtime",
                     distributionVersion, Artifact.SCOPE_COMPILE, distributionType, "bin", null);
         } else {
             for (final Artifact art : pluginArtifacts) {
-                if ("io.staminaframework".equals(art.getGroupId()) && "io.staminaframework.runtime".equals(art.getArtifactId())) {
+                if ("io.staminaframework.runtime".equals(art.getGroupId()) && "io.staminaframework.runtime".equals(art.getArtifactId())) {
                     distArt = new DefaultArtifact(art.getGroupId(), art.getArtifactId(),
                             art.getVersion(), art.getScope(), distributionType, art.getClassifier(), null);
                     break;

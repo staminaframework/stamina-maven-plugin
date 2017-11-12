@@ -20,6 +20,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>io.staminaframework</groupId>
+        <artifactId>parent</artifactId>
+        <version>1-SNAPSHOT</version>
+    </parent>
+
     <groupId>io.staminaframework</groupId>
     <artifactId>stamina-maven-plugin</artifactId>
     <version>0.1.0-SNAPSHOT</version>
@@ -49,7 +55,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.staminaframework</groupId>
+            <groupId>io.staminaframework.runtime</groupId>
             <artifactId>io.staminaframework.runtime</artifactId>
             <version>0.1.0-SNAPSHOT</version>
             <classifier>bin</classifier>
@@ -132,38 +138,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <repositories>
-        <repository>
-            <id>stamina</id>
-            <url>http://repo.staminaframework.io/releases</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>stamina-snapshots</id>
-            <url>http://repo.staminaframework.io/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>stamina</id>
-            <url>${env.STAMINA_REPO_RELEASES}</url>
-        </repository>
-        <snapshotRepository>
-            <id>stamina-snapshots</id>
-            <url>${env.STAMINA_REPO_SNAPSHOTS}</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
