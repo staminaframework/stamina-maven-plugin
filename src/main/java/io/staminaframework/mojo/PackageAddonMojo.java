@@ -93,7 +93,9 @@ public class PackageAddonMojo extends AbstractMojo {
     @Component(role = Archiver.class, hint = "zip")
     private ZipArchiver archiver;
     @Parameter(defaultValue = "true", required = true)
-    private boolean embedDependencies = true;
+    private boolean embedBundles = true;
+    @Parameter(defaultValue = "false", required = true)
+    private boolean embedSubsystems = false;
     @Parameter(defaultValue = "${project.dependencies}", required = true, readonly = true)
     private List<Dependency> projectDependencies;
     @Parameter(defaultValue = "${session}", readonly = true, required = true)
@@ -172,8 +174,10 @@ public class PackageAddonMojo extends AbstractMojo {
         getLog().info("Packaging addon to file: " + addonFile);
         archiver.setDestFile(addonFile);
         archiver.addDirectory(addonDir);
-        if (embedDependencies) {
-            for (final Dependency dep : projectDependencies) {
+        for (final Dependency dep : projectDependencies) {
+            final boolean includeDep = "jar".equals(dep.getType()) && embedBundles
+                    || "esa".equals(dep.getType()) && embedSubsystems;
+            if (includeDep) {
                 final File depFile = resolveDependency(dep);
                 archiver.addFile(depFile, depFile.getName());
             }
