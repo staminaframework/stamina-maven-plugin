@@ -155,7 +155,7 @@ public class PackageAddonMojo extends AbstractMojo {
         setManifestAttribute(addonMan, SubsystemConstants.SUBSYSTEM_NAME, addonName);
         setManifestAttribute(addonMan, SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, addonSymbolicName);
         setManifestAttribute(addonMan, SubsystemConstants.SUBSYSTEM_VERSION, addonVersion);
-        setManifestAttribute(addonMan, SubsystemConstants.SUBSYSTEM_DESCRIPTION, addonDescription);
+        setManifestAttribute(addonMan, SubsystemConstants.SUBSYSTEM_DESCRIPTION, sanitizeDescription(addonDescription));
         setManifestAttribute(addonMan, SubsystemConstants.SUBSYSTEM_DOCURL, addonDocUrl);
         setManifestAttribute(addonMan, SubsystemConstants.SUBSYSTEM_LICENSE, addonLicense);
         setManifestAttribute(addonMan, SubsystemConstants.SUBSYSTEM_VENDOR, addonVendor);
@@ -299,5 +299,13 @@ public class PackageAddonMojo extends AbstractMojo {
         }
         final Version high = new Version(highMajor, 0);
         return new VersionRange(low, high).toString();
+    }
+
+    private String sanitizeDescription(String desc) {
+        final String newDesc = desc.replaceAll("\\s+", " ").trim();
+        if (newDesc.length() == 0) {
+            return null;
+        }
+        return newDesc;
     }
 }
