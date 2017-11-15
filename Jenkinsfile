@@ -10,7 +10,7 @@ pipeline {
         stage("Build") {
             steps {
                 withMaven(maven: 'M3', mavenLocalRepo: '.repository') {
-                    sh "mvn -Dmaven.test.skip=true clean deploy"
+                    sh "mvn -Prelease -Dmaven.test.skip=true clean deploy"
                 }
             }
         }
