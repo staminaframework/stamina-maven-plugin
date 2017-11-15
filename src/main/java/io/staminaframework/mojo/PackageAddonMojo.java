@@ -46,9 +46,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -136,7 +136,7 @@ public class PackageAddonMojo extends AbstractMojo {
         addonDir.mkdirs();
 
         // Convert Maven version to OSGi format.
-        addonVersion = MavenVersion.parseMavenString(addonVersion).getOSGiVersion().toString();
+        addonVersion = toSubsystemVersion(addonVersion);
 
         if (addonLicense == null) {
             final List<License> licences = project.getLicenses();
@@ -307,5 +307,27 @@ public class PackageAddonMojo extends AbstractMojo {
             return null;
         }
         return newDesc;
+    }
+
+    private String toSubsystemVersion(String versionStr) {
+        final MavenVersion mv = MavenVersion.parseMavenString(versionStr);
+        String qualifier = null;
+
+        final Version ov = mv.getOSGiVersion();
+        final int major = ov.getMajor();
+        final int minor = ov.getMinor();
+        final int micro = ov.getMicro();
+
+        if (mv.isSnapshot()) {
+            final DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ROOT);
+            qualifier = df.format(new Date(System.currentTimeMillis()));
+        }
+
+        final StringBuilder buf = new StringBuilder(32);
+        buf.append(major).append(".").append(minor).append(".").append(micro);
+        if (qualifier != null) {
+            buf.append(".").append(qualifier);
+        }
+        return buf.toString();
     }
 }
