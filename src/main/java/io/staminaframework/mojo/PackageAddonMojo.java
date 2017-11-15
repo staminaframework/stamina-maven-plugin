@@ -120,9 +120,6 @@ public class PackageAddonMojo extends AbstractMojo {
                     || Artifact.SCOPE_IMPORT.equals(scope)) {
                 continue;
             }
-            if (dep.isOptional()) {
-                continue;
-            }
             if (!SUPPORTED_DEPENDENCY_TYPES.contains(dep.getType())) {
                 continue;
             }
@@ -202,6 +199,7 @@ public class PackageAddonMojo extends AbstractMojo {
 
     private String toSubsystemContentItem(Dependency dep, int startOrder) throws MojoFailureException {
         final File depFile = resolveDependency(dep);
+        final String resolutionPart = ";resolution:=" + (dep.isOptional() ? "optional" : "mandatory");
         if ("esa".equals(dep.getType())) {
             try (final ZipFile zip = new ZipFile(depFile)) {
                 final ZipEntry manEntry = zip.getEntry("OSGI-INF/SUBSYSTEM.MF");
@@ -225,7 +223,7 @@ public class PackageAddonMojo extends AbstractMojo {
                     if (sn == null) {
                         throw new IOException("Missing subsystem symbolic name");
                     }
-                    return sn + ";type=" + type + ";version=\"" + version + "\";start-order:=" + startOrder;
+                    return sn + ";type=" + type + ";version=\"" + version + "\";start-order:=" + startOrder + resolutionPart;
                 }
             } catch (IOException e) {
                 throw new MojoFailureException("Failed to read OSGi subsystem dependency: " + depFile, e);
@@ -258,7 +256,7 @@ public class PackageAddonMojo extends AbstractMojo {
                 final String type = atts.getValue(Constants.FRAGMENT_HOST) != null
                         ? "osgi.fragment" : "osgi.bundle";
 
-                return sn + ";type=" + type + ";version=\"" + version + "\";start-order:=" + startOrder;
+                return sn + ";type=" + type + ";version=\"" + version + "\";start-order:=" + startOrder + resolutionPart;
             } catch (IOException e) {
                 throw new MojoFailureException("Failed to read JAR manifest: " + depFile, e);
             }
