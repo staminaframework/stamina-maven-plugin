@@ -9,14 +9,14 @@ pipeline {
         }
         stage("Build") {
             steps {
-                withMaven(maven: 'M3', mavenLocalRepo: '.repository') {
+                withMaven(maven: 'M3') {
                     sh "mvn -Prelease -Dmaven.test.skip=true clean deploy"
                 }
             }
         }
         stage("Verify") {
             steps {
-                withMaven(maven: 'M3', mavenLocalRepo: '.repository') {
+                withMaven(maven: 'M3') {
                     sh "mvn -Dmaven.install.skip=true integration-test"
                 }
             }
