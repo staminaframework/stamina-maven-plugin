@@ -26,7 +26,7 @@
 
     <groupId>io.staminaframework</groupId>
     <artifactId>stamina-maven-plugin</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0-SNAPSHOT</version>
     <name>Stamina Maven Plugin</name>
     <packaging>maven-plugin</packaging>
 
@@ -43,7 +43,7 @@
     <scm>
         <url>http://github.com/staminaframework/stamina-maven-plugin</url>
         <connection>scm:git:https://github.com/staminaframework/stamina-maven-plugin.git</connection>
-      <tag>stamina-maven-plugin-0.1.0</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <properties>
